@@ -54,6 +54,16 @@ struct AppView: View {
     @ViewBuilder
     var toolbar: some View {
         
+        Picker("Footprint",
+               selection: $viewModel.area) {
+            
+            ForEach(Grid.Footprint.Area.allCases, id: \.self) { area in
+                
+                Text(area.id.capitalized)
+                    .id(area)
+            }
+        }
+        
         Picker("Geology Type",
                selection: $viewModel.geologyType) {
             

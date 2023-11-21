@@ -12,11 +12,21 @@ import SceneKit
 
 class AppViewModel: ObservableObject {
     
-    @Published var geologyType: GeologyType = .causeway {
+    @Published var geologyType: GeologyType = .promontory {
         
         didSet {
             
             guard oldValue != geologyType else { return }
+            
+            updateScene()
+        }
+    }
+    
+    @Published var area: Grid.Footprint.Area = .truchet {
+        
+        didSet {
+            
+            guard oldValue != area else { return }
             
             updateScene()
         }
@@ -68,7 +78,7 @@ extension AppViewModel {
         
         self.updateSurface()
         
-        guard let mesh = try? geologyType.mesh(),
+        guard let mesh = try? geologyType.mesh(area: area),
               let node = self.createNode(with: mesh) else { return }
         
         self.scene.rootNode.addChildNode(node)
@@ -78,11 +88,20 @@ extension AppViewModel {
     
     private func updateSurface() {
         
-        let vertices = Grid.Triangle.zero.corners(for: .tile).map { Vertex($0, .up) }
+        var polygons: [Euclid.Polygon] = []
+                
+        for coordinate in area.footprint {
+            
+            let triangle = Grid.Triangle(coordinate)
+            
+            let vertices = triangle.corners(for: .tile).map { Vertex($0, .up) }
+            
+            guard let polygon = Polygon(vertices) else { continue }
+            
+            polygons.append(polygon)
+        }
         
-        guard let polygon = Polygon(vertices) else { return }
-        
-        let mesh = Mesh([polygon])
+        let mesh = Mesh(polygons)
         
         guard let node = createNode(with: mesh) else { return }
         

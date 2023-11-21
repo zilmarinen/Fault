@@ -14,9 +14,10 @@ let package = Package(
             targets: ["Fault"]),
     ],
     dependencies: [
-        .package(url: "git@github.com:nicklockwood/Euclid.git", branch: "main"),
+        //.package(url: "git@github.com:nicklockwood/Euclid.git", branch: "main"),
         .package(url: "git@github.com:3Squared/PeakOperation.git", branch: "develop"),
         .package(path: "../Bivouac"),
+        .package(path: "../Euclid")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
